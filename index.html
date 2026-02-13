@@ -11,12 +11,13 @@
             --siemens-blue: #00183B;
             --siemens-cyan: #00FFB9;
             --siemens-white: #FFFFFF;
+            --siemens-gray-bg: #F3F5F7;
             
             /* Semantic Mappings */
             --sb-primary: var(--siemens-blue);
             --sb-accent: var(--siemens-cyan);
             --sb-text: var(--siemens-blue);
-            --sb-bg: #F4F6F8;
+            --sb-bg: var(--siemens-gray-bg);
             --sb-card-bg: #FFFFFF;
         }
 
@@ -25,13 +26,96 @@
             background-color: var(--sb-bg);
             color: var(--sb-text);
             margin: 0;
-            padding: 16px;
+            padding: 0;
             box-sizing: border-box;
         }
 
         /* Utility Classes */
         .hidden { display: none !important; }
         
+        /* --- WIDGET HEADER (SAP Concur Style) --- */
+        .widget-header {
+            background-color: var(--sb-primary);
+            color: var(--siemens-white);
+            padding: 20px 24px 0 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .header-icon {
+            background-color: var(--sb-accent);
+            color: var(--sb-primary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+            margin-left: 44px; /* Align with title */
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 40px;
+            padding-bottom: 20px;
+            margin-left: 44px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--sb-accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .header-accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, var(--sb-accent) 25%, transparent 25%);
+            background-size: 100% 100%;
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            margin-top: 8px;
+        }
+
+        /* --- CONTENT CONTAINER --- */
+        .content-container {
+            padding: 0 16px 24px 16px;
+        }
+
         /* --- LIST VIEW --- */
         .event-list {
             display: flex;
@@ -39,190 +123,350 @@
             gap: 16px;
         }
 
-        /* Responsive Grid for Tablet/Desktop */
         @media (min-width: 768px) {
             .event-list {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
                 gap: 24px;
             }
+            .content-container {
+                padding: 0 24px 24px 24px;
+            }
         }
 
         .event-card {
             background: var(--sb-card-bg);
-            border-radius: 4px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,24,59,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,24,59,0.08);
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 4px solid transparent;
             position: relative;
             display: flex;
             flex-direction: column;
-            height: 100%; /* Ensure equal height in grid */
-            box-sizing: border-box;
+            height: 100%;
+            border: 1px solid rgba(0,24,59,0.05);
         }
 
         .event-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,24,59,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,24,59,0.12);
         }
 
-        /* Live Indicator Styles */
-        .event-card.is-live {
-            border-left-color: var(--sb-accent);
+        .card-thumbnail {
+            height: 160px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
 
         .live-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
             background-color: var(--sb-accent);
             color: var(--sb-primary);
             font-size: 0.75rem;
             font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 2px;
+            padding: 4px 10px;
+            border-radius: 12px;
             text-transform: uppercase;
-            display: inline-block;
-            align-self: flex-start;
-            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .upcoming-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background-color: rgba(0, 24, 59, 0.8);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            backdrop-filter: blur(4px);
+        }
+
+        .card-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .event-date {
-            font-size: 0.85rem;
-            opacity: 0.7;
-            margin-bottom: 8px;
-            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
         }
 
         .event-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin: 0 0 10px 0;
+            margin: 0 0 8px 0;
             color: var(--sb-primary);
+            line-height: 1.3;
         }
 
         .event-desc {
-            font-size: 0.95rem;
-            opacity: 0.9;
+            font-size: 0.9rem;
+            color: #444;
             line-height: 1.5;
-            flex-grow: 1; /* Pushes content down if needed */
+            flex-grow: 1;
         }
-
-        /* --- DETAIL VIEW (PLAYER) --- */
-        .detail-container {
-            width: 100%;
+        
+        .card-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: flex-end;
         }
-
-        /* Center Detail View on Large Screens */
-        @media (min-width: 900px) {
-            .detail-container {
-                max-width: 900px;
-                margin: 0 auto;
-            }
-            .back-btn-wrapper {
-                max-width: 900px;
-                margin: 0 auto;
-            }
-        }
-
-        .detail-view {
-            background: var(--sb-card-bg);
-            border-radius: 4px;
-            padding: 24px;
-            box-shadow: 0 2px 4px rgba(0,24,59,0.1);
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
+        
+        .open-btn {
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--sb-primary);
-            font-weight: 700;
-            cursor: pointer;
-            padding: 0;
-            margin-bottom: 16px;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            font-size: 1rem;
         }
+        .open-btn::after { content: "→"; margin-left: 4px; transition: margin-left 0.2s; }
+        .event-card:hover .open-btn::after { margin-left: 8px; }
 
-        .back-btn:hover { 
-            text-decoration: underline;
-            opacity: 0.8;
-        }
-
-        /* Responsive 16:9 Aspect Ratio for iFrame */
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            background: #000;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        .detail-title { 
-            margin: 0 0 12px 0; 
-            font-size: 1.5rem; 
-            color: var(--sb-primary);
-            line-height: 1.2;
+        /* --- DETAIL VIEW (CUSTOM PLAYER UI) --- */
+        .detail-wrapper {
+            padding: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
         
-        .detail-meta { 
-            opacity: 0.7; 
-            font-size: 1rem; 
-            margin-bottom: 20px; 
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(0,24,59,0.1);
+        /* Custom Player Container */
+        .custom-player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #000;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 24px;
         }
 
-        /* Loading State */
+        /* Background Image (Solar Panel) */
+        .player-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.9;
+        }
+        
+        /* Gradient Overlay for Text Readability */
+        .player-gradient {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,24,59,0.2) 0%, rgba(0,24,59,0) 50%, rgba(0,9,30,0.95) 100%);
+        }
+
+        /* Top Left Logo Box */
+        .player-logo-box {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--siemens-cyan);
+            color: var(--siemens-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Top Right Download Icon */
+        .player-download-icon {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            color: white;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Bottom Left Text (Above Controls) */
+        .player-text-overlay {
+            position: absolute;
+            bottom: 80px; /* Above control bar */
+            left: 24px;
+            color: white;
+            z-index: 10;
+        }
+        .player-brand-name { font-size: 1.25rem; font-weight: 700; display: block; letter-spacing: 0.5px; }
+        .player-sub-name { font-size: 1.25rem; font-weight: 300; opacity: 0.9; }
+
+        /* Control Bar */
+        .player-controls {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            height: 48px;
+            background-color: rgba(0, 9, 30, 0.95); /* Deep Navy/Black */
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-radius: 4px;
+        }
+
+        .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; margin-right: 16px; }
+        .control-btn svg { fill: white; width: 20px; height: 20px; }
+        .control-btn:hover svg { fill: var(--siemens-cyan); }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 4px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin: 0 16px;
+            position: relative;
+            cursor: pointer;
+        }
+        .progress-fill {
+            width: 35%;
+            height: 100%;
+            background-color: var(--siemens-cyan);
+            border-radius: 2px;
+        }
+
+        .time-display {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 16px;
+        }
+        
+        .right-controls { display: flex; gap: 12px; align-items: center; }
+
+        /* Detail Text Area */
+        .detail-info {
+            background: var(--sb-card-bg);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,24,59,0.1);
+        }
+
+        .detail-title { margin: 0 0 8px 0; font-size: 1.6rem; color: var(--sb-primary); }
+        .detail-meta { color: #666; font-size: 0.95rem; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
+        .back-btn { background: none; border: none; color: var(--sb-primary); font-weight: 700; cursor: pointer; padding: 0; margin-bottom: 16px; display: flex; align-items: center; font-size: 1rem; }
+        .back-btn:hover { text-decoration: underline; opacity: 0.8; }
+
         .loader { text-align: center; padding: 40px; color: var(--sb-primary); opacity: 0.7; font-size: 1.1rem;}
         
-        /* Headers */
-        h3 { font-size: 1.5rem; font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <!-- Container for the App -->
     <div id="app">
-        <!-- Loader -->
-        <div id="loader" class="loader">Loading events...</div>
-
-        <!-- List View -->
-        <div id="listView" class="hidden">
-            <h3 style="margin-top:0; margin-bottom:24px; color: var(--sb-primary);">Live & Upcoming Events</h3>
-            <div id="eventListContainer" class="event-list">
-                <!-- Events are injected here via JS -->
+        <!-- HEADER -->
+        <div id="mainHeader" class="widget-header">
+            <div class="header-top">
+                <div class="header-icon">3Q</div>
+                <h1 class="header-title">Live Events</h1>
             </div>
-            <div id="noEventsMessage" class="hidden" style="text-align:center; opacity: 0.6; padding: 40px;">
-                No events currently scheduled.
+            <div class="header-subtitle">Corporate Streaming & Townhalls</div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span id="statLive" class="stat-value">0</span>
+                    <span class="stat-label">Live Now</span>
+                </div>
+                <div class="stat-item">
+                    <span id="statUpcoming" class="stat-value">0</span>
+                    <span class="stat-label">Upcoming</span>
+                </div>
             </div>
+            <div class="header-accent-line"></div>
         </div>
 
-        <!-- Detail View -->
-        <div id="detailView" class="hidden">
-            <div class="back-btn-wrapper">
+        <div class="content-container">
+            <div id="loader" class="loader">Loading events...</div>
+
+            <!-- List View -->
+            <div id="listView" class="hidden">
+                <div id="eventListContainer" class="event-list"></div>
+                <div id="noEventsMessage" class="hidden" style="text-align:center; opacity: 0.6; padding: 40px;">No events currently scheduled.</div>
+            </div>
+
+            <!-- Detail View -->
+            <div id="detailView" class="hidden detail-wrapper">
                 <button class="back-btn" onclick="app.showList()">
                     ← Back to Overview
                 </button>
-            </div>
-            
-            <div class="detail-container">
-                <div class="detail-view">
-                    <div class="video-wrapper">
-                        <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                
+                <!-- CUSTOM PLAYER MOCKUP -->
+                <div class="custom-player-container">
+                    <!-- Solar Panel Background -->
+                    <div class="player-background" id="playerBg" style="background-image: url('https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=80');"></div>
+                    <div class="player-gradient"></div>
+
+                    <!-- Top Left Logo -->
+                    <div class="player-logo-box">S</div>
+
+                    <!-- Top Right Download Icon -->
+                    <div class="player-download-icon">
+                        <svg viewBox="0 0 24 24" fill="white" width="28" height="28">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
                     </div>
+
+                    <!-- Bottom Text -->
+                    <div class="player-text-overlay">
+                        <span class="player-brand-name">SIEMENS</span>
+                        <span class="player-sub-name">Energy System</span>
+                    </div>
+
+                    <!-- Controls Bar -->
+                    <div class="player-controls">
+                        <!-- Play -->
+                        <button class="control-btn">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </button>
+                        
+                        <!-- Volume -->
+                        <button class="control-btn">
+                            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                        </button>
+
+                        <!-- Progress -->
+                        <div class="progress-track">
+                            <div class="progress-fill"></div>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="time-display">13:15</div>
+
+                        <!-- Settings & Fullscreen -->
+                        <div class="right-controls">
+                            <button class="control-btn" style="margin:0;">
+                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L5.04 8.87c-.11.21-.06.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.11-.22.06-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                            </button>
+                            <button class="control-btn" style="margin:0;">
+                                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="detail-info">
                     <h2 id="detailTitle" class="detail-title"></h2>
                     <div id="detailDate" class="detail-meta"></div>
                     <p id="detailDesc" style="line-height: 1.6; font-size: 1.05rem;"></p>
@@ -232,64 +476,50 @@
     </div>
 
     <script>
-        /**
-         * CONFIGURATION
-         * ---------------------------------------------------------
-         * Set useMockData to false once your backend is live.
-         */
         const CONFIG = {
-            // URL to your integration service (Backend) delivering the JSON
             apiEndpoint: 'https://your-backend-service.example.com/api/events',
-            
-            // Set to TRUE for testing without a real backend
             useMockData: true 
         };
 
-        /**
-         * MOCK DATA (For Demo Purposes)
-         * This matches the JSON format your backend must provide.
-         * NOTE: 'embedUrl' fields use placeholder images to prevent
-         * 404 errors in the demo.
-         */
         const MOCK_DATA = [
             {
                 id: 1,
-                title: "CEO Townhall - Q1 Strategy",
-                date: new Date(new Date().getTime() - 1000 * 60 * 30).toISOString(), // started 30 mins ago
-                description: "Discussing quarterly results and the 2026 roadmap. Broadcast live from Berlin HQ.",
+                title: "SIEMENS Energy System",
+                date: new Date(new Date().getTime() - 1000 * 60 * 30).toISOString(),
+                description: "Live demonstration of the new solar array efficiency protocols. Broadcasting from Munich Innovation Hub.",
                 isLive: true, 
-                // Placeholder image in Siemens style
-                embedUrl: "https://placehold.co/1280x720/00183B/00FFB9.png?text=LIVE+STREAM+SIGNAL" 
+                imageUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+                embedUrl: "" // Not used in this visual mockup mode
             },
             {
                 id: 2,
-                title: "Product Training: New Features",
+                title: "Global Product Training",
                 date: "2026-03-15T14:00:00.000Z",
-                description: "Deep dive into the new capabilities of Version 4.0 for all sales staff.",
+                description: "Deep dive into Version 4.0 features. Mandatory for Sales & Marketing staff.",
                 isLive: false,
-                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Event+starts+Mar+15"
+                imageUrl: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80",
+                embedUrl: ""
             },
             {
                 id: 3,
-                title: "Lunch & Learn: IT Security",
+                title: "Cybersecurity Awareness",
                 date: "2026-03-20T11:00:00.000Z",
-                description: "Essential tips and tricks for secure remote working environments.",
+                description: "Protecting our digital assets: A workshop on phishing and data protection.",
                 isLive: false,
-                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Preview:+IT+Security"
+                imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
+                embedUrl: ""
             },
             {
                 id: 4,
-                title: "Global All-Hands",
+                title: "All-Hands: Asia Pacific",
                 date: "2026-04-05T09:00:00.000Z",
-                description: "Quarterly update for all global regions. Please join 5 minutes early.",
+                description: "Regional updates from Singapore and Tokyo offices.",
                 isLive: false,
-                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Global+All-Hands"
+                imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+                embedUrl: ""
             }
         ];
 
-        /**
-         * APP LOGIC
-         */
         const app = {
             init: function() {
                 this.loadEvents();
@@ -298,18 +528,15 @@
             loadEvents: async function() {
                 try {
                     let events = [];
-                    
                     if (CONFIG.useMockData) {
-                        // Simulate network delay
                         await new Promise(r => setTimeout(r, 600));
                         events = MOCK_DATA;
                     } else {
-                        // Real API Call to Backend
                         const response = await fetch(CONFIG.apiEndpoint);
                         if (!response.ok) throw new Error("Network error");
                         events = await response.json();
                     }
-
+                    this.updateStats(events);
                     this.renderList(events);
                 } catch (error) {
                     console.error("Load error:", error);
@@ -317,10 +544,16 @@
                 }
             },
 
+            updateStats: function(events) {
+                const liveCount = events.filter(e => e.isLive).length;
+                const upcomingCount = events.filter(e => !e.isLive).length;
+                document.getElementById('statLive').innerText = liveCount;
+                document.getElementById('statUpcoming').innerText = upcomingCount;
+            },
+
             renderList: function(events) {
                 const container = document.getElementById('eventListContainer');
                 container.innerHTML = '';
-                
                 document.getElementById('loader').classList.add('hidden');
                 
                 if (events.length === 0) {
@@ -329,7 +562,6 @@
                     return;
                 }
 
-                // Sort: Live events first, then by date ascending
                 events.sort((a, b) => {
                     if (a.isLive && !b.isLive) return -1;
                     if (!a.isLive && b.isLive) return 1;
@@ -338,26 +570,35 @@
 
                 events.forEach(event => {
                     const card = document.createElement('div');
-                    card.className = `event-card ${event.isLive ? 'is-live' : ''}`;
+                    card.className = `event-card`;
                     card.onclick = () => this.showDetail(event);
 
                     const dateStr = new Date(event.date).toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric', year: 'numeric', 
-                        hour: '2-digit', minute:'2-digit'
+                        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute:'2-digit'
                     });
 
-                    let html = '';
+                    const bgStyle = `background-image: url('${event.imageUrl}');`;
+
+                    let badgeHtml = '';
                     if (event.isLive) {
-                        html += `<span class="live-badge">● LIVE NOW</span>`;
+                        badgeHtml = `<span class="live-badge">● LIVE</span>`;
+                    } else {
+                        badgeHtml = `<span class="upcoming-badge">Upcoming</span>`;
                     }
 
-                    html += `
-                        <span class="event-date">${dateStr}</span>
-                        <h4 class="event-title">${event.title}</h4>
-                        <p class="event-desc">${event.description}</p>
+                    card.innerHTML = `
+                        <div class="card-thumbnail" style="${bgStyle}">
+                            ${badgeHtml}
+                        </div>
+                        <div class="card-content">
+                            <span class="event-date">${dateStr}</span>
+                            <h4 class="event-title">${event.title}</h4>
+                            <p class="event-desc">${event.description}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span class="open-btn">Open Stream</span>
+                        </div>
                     `;
-                    
-                    card.innerHTML = html;
                     container.appendChild(card);
                 });
 
@@ -365,11 +606,10 @@
             },
 
             showDetail: function(event) {
-                // Toggle UI
+                document.getElementById('mainHeader').classList.add('hidden'); // Hide header on detail to match focus
                 document.getElementById('listView').classList.add('hidden');
                 document.getElementById('detailView').classList.remove('hidden');
 
-                // Populate Data
                 document.getElementById('detailTitle').innerText = event.title;
                 document.getElementById('detailDesc').innerText = event.description;
                 
@@ -379,37 +619,26 @@
                 });
                 document.getElementById('detailDate').innerText = dateStr;
 
-                // Load Player 
-                let embedSrc = event.embedUrl;
+                // Update Background Image
+                document.getElementById('playerBg').style.backgroundImage = `url('${event.imageUrl}')`;
                 
-                // Add autoplay if not present
-                if(embedSrc.indexOf('?') === -1) {
-                    embedSrc += '?autoplay=true';
-                } else {
-                    embedSrc += '&autoplay=true';
-                }
-                
-                document.getElementById('playerFrame').src = embedSrc;
-                
-                // Scroll to top
+                // Update specific player text overlay if needed, or keep generic for demo
+                document.querySelector('.player-brand-name').innerText = event.title.split(' ')[0] || "SIEMENS";
+                document.querySelector('.player-sub-name').innerText = event.title.substring(event.title.indexOf(' ')+1) || "Energy System";
+
                 window.scrollTo(0,0);
             },
 
             showList: function() {
-                // Toggle UI
                 document.getElementById('detailView').classList.add('hidden');
                 document.getElementById('listView').classList.remove('hidden');
-
-                // Stop Player (avoid background audio)
-                document.getElementById('playerFrame').src = "";
+                document.getElementById('mainHeader').classList.remove('hidden');
             }
         };
 
-        // Start App
         document.addEventListener('DOMContentLoaded', () => {
             app.init();
         });
-
     </script>
 </body>
 </html>
