@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Events Plugin</title>
+    <style>
+        /* --- CSS STYLING (Siemens Branding) --- */
+        :root {
+            /* Siemens Brand Colors */
+            --siemens-blue: #00183B;
+            --siemens-cyan: #00FFB9;
+            --siemens-white: #FFFFFF;
+            
+            /* Semantic Mappings */
+            --sb-primary: var(--siemens-blue);
+            --sb-accent: var(--siemens-cyan);
+            --sb-text: var(--siemens-blue);
+            --sb-bg: #F4F6F8;
+            --sb-card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--sb-bg);
+            color: var(--sb-text);
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        
+        /* --- LIST VIEW --- */
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Responsive Grid for Tablet/Desktop */
+        @media (min-width: 768px) {
+            .event-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 24px;
+            }
+        }
+
+        .event-card {
+            background: var(--sb-card-bg);
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,24,59,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid transparent;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Ensure equal height in grid */
+            box-sizing: border-box;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,24,59,0.15);
+        }
+
+        /* Live Indicator Styles */
+        .event-card.is-live {
+            border-left-color: var(--sb-accent);
+        }
+
+        .live-badge {
+            background-color: var(--sb-accent);
+            color: var(--sb-primary);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            align-self: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .event-date {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--sb-primary);
+        }
+
+        .event-desc {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.5;
+            flex-grow: 1; /* Pushes content down if needed */
+        }
+
+        /* --- DETAIL VIEW (PLAYER) --- */
+        .detail-container {
+            width: 100%;
+        }
+
+        /* Center Detail View on Large Screens */
+        @media (min-width: 900px) {
+            .detail-container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .back-btn-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+        }
+
+        .detail-view {
+            background: var(--sb-card-bg);
+            border-radius: 4px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,24,59,0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--sb-primary);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .back-btn:hover { 
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        /* Responsive 16:9 Aspect Ratio for iFrame */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background: #000;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .detail-title { 
+            margin: 0 0 12px 0; 
+            font-size: 1.5rem; 
+            color: var(--sb-primary);
+            line-height: 1.2;
+        }
+        
+        .detail-meta { 
+            opacity: 0.7; 
+            font-size: 1rem; 
+            margin-bottom: 20px; 
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0,24,59,0.1);
+        }
+
+        /* Loading State */
+        .loader { text-align: center; padding: 40px; color: var(--sb-primary); opacity: 0.7; font-size: 1.1rem;}
+        
+        /* Headers */
+        h3 { font-size: 1.5rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- Container for the App -->
+    <div id="app">
+        <!-- Loader -->
+        <div id="loader" class="loader">Loading events...</div>
+
+        <!-- List View -->
+        <div id="listView" class="hidden">
+            <h3 style="margin-top:0; margin-bottom:24px; color: var(--sb-primary);">Live & Upcoming Events</h3>
+            <div id="eventListContainer" class="event-list">
+                <!-- Events are injected here via JS -->
+            </div>
+            <div id="noEventsMessage" class="hidden" style="text-align:center; opacity: 0.6; padding: 40px;">
+                No events currently scheduled.
+            </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detailView" class="hidden">
+            <div class="back-btn-wrapper">
+                <button class="back-btn" onclick="app.showList()">
+                    ← Back to Overview
+                </button>
+            </div>
+            
+            <div class="detail-container">
+                <div class="detail-view">
+                    <div class="video-wrapper">
+                        <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                    </div>
+                    <h2 id="detailTitle" class="detail-title"></h2>
+                    <div id="detailDate" class="detail-meta"></div>
+                    <p id="detailDesc" style="line-height: 1.6; font-size: 1.05rem;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * CONFIGURATION
+         * ---------------------------------------------------------
+         * Set useMockData to false once your backend is live.
+         */
+        const CONFIG = {
+            // URL to your integration service (Backend) delivering the JSON
+            apiEndpoint: 'https://your-backend-service.example.com/api/events',
+            
+            // Set to TRUE for testing without a real backend
+            useMockData: true 
+        };
+
+        /**
+         * MOCK DATA (For Demo Purposes)
+         * This matches the JSON format your backend must provide.
+         * NOTE: 'embedUrl' fields use placeholder images to prevent
+         * 404 errors in the demo.
+         */
+        const MOCK_DATA = [
+            {
+                id: 1,
+                title: "CEO Townhall - Q1 Strategy",
+                date: new Date(new Date().getTime() - 1000 * 60 * 30).toISOString(), // started 30 mins ago
+                description: "Discussing quarterly results and the 2026 roadmap. Broadcast live from Berlin HQ.",
+                isLive: true, 
+                // Placeholder image in Siemens style
+                embedUrl: "https://placehold.co/1280x720/00183B/00FFB9.png?text=LIVE+STREAM+SIGNAL" 
+            },
+            {
+                id: 2,
+                title: "Product Training: New Features",
+                date: "2026-03-15T14:00:00.000Z",
+                description: "Deep dive into the new capabilities of Version 4.0 for all sales staff.",
+                isLive: false,
+                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Event+starts+Mar+15"
+            },
+            {
+                id: 3,
+                title: "Lunch & Learn: IT Security",
+                date: "2026-03-20T11:00:00.000Z",
+                description: "Essential tips and tricks for secure remote working environments.",
+                isLive: false,
+                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Preview:+IT+Security"
+            },
+            {
+                id: 4,
+                title: "Global All-Hands",
+                date: "2026-04-05T09:00:00.000Z",
+                description: "Quarterly update for all global regions. Please join 5 minutes early.",
+                isLive: false,
+                embedUrl: "https://placehold.co/1280x720/F4F6F8/00183B.png?text=Global+All-Hands"
+            }
+        ];
+
+        /**
+         * APP LOGIC
+         */
+        const app = {
+            init: function() {
+                this.loadEvents();
+            },
+
+            loadEvents: async function() {
+                try {
+                    let events = [];
+                    
+                    if (CONFIG.useMockData) {
+                        // Simulate network delay
+                        await new Promise(r => setTimeout(r, 600));
+                        events = MOCK_DATA;
+                    } else {
+                        // Real API Call to Backend
+                        const response = await fetch(CONFIG.apiEndpoint);
+                        if (!response.ok) throw new Error("Network error");
+                        events = await response.json();
+                    }
+
+                    this.renderList(events);
+                } catch (error) {
+                    console.error("Load error:", error);
+                    document.getElementById('loader').innerText = "Failed to load events.";
+                }
+            },
+
+            renderList: function(events) {
+                const container = document.getElementById('eventListContainer');
+                container.innerHTML = '';
+                
+                document.getElementById('loader').classList.add('hidden');
+                
+                if (events.length === 0) {
+                    document.getElementById('noEventsMessage').classList.remove('hidden');
+                    document.getElementById('listView').classList.remove('hidden');
+                    return;
+                }
+
+                // Sort: Live events first, then by date ascending
+                events.sort((a, b) => {
+                    if (a.isLive && !b.isLive) return -1;
+                    if (!a.isLive && b.isLive) return 1;
+                    return new Date(a.date) - new Date(b.date);
+                });
+
+                events.forEach(event => {
+                    const card = document.createElement('div');
+                    card.className = `event-card ${event.isLive ? 'is-live' : ''}`;
+                    card.onclick = () => this.showDetail(event);
+
+                    const dateStr = new Date(event.date).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric', 
+                        hour: '2-digit', minute:'2-digit'
+                    });
+
+                    let html = '';
+                    if (event.isLive) {
+                        html += `<span class="live-badge">● LIVE NOW</span>`;
+                    }
+
+                    html += `
+                        <span class="event-date">${dateStr}</span>
+                        <h4 class="event-title">${event.title}</h4>
+                        <p class="event-desc">${event.description}</p>
+                    `;
+                    
+                    card.innerHTML = html;
+                    container.appendChild(card);
+                });
+
+                document.getElementById('listView').classList.remove('hidden');
+            },
+
+            showDetail: function(event) {
+                // Toggle UI
+                document.getElementById('listView').classList.add('hidden');
+                document.getElementById('detailView').classList.remove('hidden');
+
+                // Populate Data
+                document.getElementById('detailTitle').innerText = event.title;
+                document.getElementById('detailDesc').innerText = event.description;
+                
+                const dateStr = new Date(event.date).toLocaleDateString('en-US', {
+                    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', 
+                    hour: '2-digit', minute:'2-digit'
+                });
+                document.getElementById('detailDate').innerText = dateStr;
+
+                // Load Player 
+                let embedSrc = event.embedUrl;
+                
+                // Add autoplay if not present
+                if(embedSrc.indexOf('?') === -1) {
+                    embedSrc += '?autoplay=true';
+                } else {
+                    embedSrc += '&autoplay=true';
+                }
+                
+                document.getElementById('playerFrame').src = embedSrc;
+                
+                // Scroll to top
+                window.scrollTo(0,0);
+            },
+
+            showList: function() {
+                // Toggle UI
+                document.getElementById('detailView').classList.add('hidden');
+                document.getElementById('listView').classList.remove('hidden');
+
+                // Stop Player (avoid background audio)
+                document.getElementById('playerFrame').src = "";
+            }
+        };
+
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>
